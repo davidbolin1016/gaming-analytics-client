@@ -1,5 +1,7 @@
 import React from 'react';
 import ApiService from '../../Services/ApiService';
+import Recommendation from '../Recommendation/Recommendation';
+
 
 export default class ListPage extends React.Component {
   
@@ -48,8 +50,24 @@ export default class ListPage extends React.Component {
   }
 
   render() {
-    return <ul>      
-        {this.state.visible.map((recommendation, i) => <li key={i}>{'Recommendation number ' + i}</li>)}
-    </ul>;
+    return <table>
+        <tr>
+          <th></th>
+          <th>Action</th>
+          <th>Status</th>
+          <th>Area</th>
+          <th>Zone</th>
+          <th>Bank</th>
+          <th>Stand</th>
+          <th>Net Win</th>
+          <th>Old Denom</th>
+          <th>New Denom</th>
+          <th>Old Payback %</th>
+          <th>New Payback %</th>
+          <th>Asset</th>
+          <th>Generated On</th>
+        </tr>      
+        {this.state.visible.map((recommendation, i) => <Recommendation rec={recommendation}></Recommendation>)}
+    </table>;
   }
 }
