@@ -35,6 +35,20 @@ export default class ListPage extends React.Component {
     return arr; // this might not be the right structure, will revisit
   }
 
+  changeFields(event) {
+    const newNumber = event.target.value;
+    const sorted = this.groupBy(this.sorter(this.state.recommendations));
+    console.log(sorted.length);
+    console.log(newNumber);
+    console.log(this.state.page);
+    const newView = sorted.slice(this.state.page * newNumber, (this.state.page + 1) * newNumber);
+    console.log(newView);
+    this.setState({
+      numberRows: newNumber,
+      visible: newView
+    })
+  }
+
   componentDidMount() {
     ApiService.getRecommendations()
       .then(res => {
@@ -50,7 +64,9 @@ export default class ListPage extends React.Component {
   }
 
   render() {
-    return <table>
+    return <>
+    <table>
+      <tbody>
         <tr>
           <th></th>
           <th>Action</th>
@@ -68,6 +84,15 @@ export default class ListPage extends React.Component {
           <th>Generated On</th>
         </tr>      
         {this.state.visible.map((recommendation, i) => <Recommendation rec={recommendation}></Recommendation>)}
-    </table>;
+        </tbody>
+    </table>
+    <div>
+      <button>Previous</button>
+      Page {this.state.page + 1} of {Math.ceil(this.state.recommendations.length / this.state.numberRows)}
+      {'  '}
+      <input type="number" value={this.state.numberRows} onChange={event => this.changeFields(event)}></input>rows
+      <button>Next</button>
+    </div>
+    </>;
   }
 }
