@@ -10,7 +10,6 @@ export default class ListPage extends React.Component {
   componentDidMount() {
     ApiService.getRecommendations()
       .then(res => {
-        console.log(res);
         this.setState({
           recommendations: res
         }
