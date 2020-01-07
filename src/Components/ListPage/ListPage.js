@@ -7,7 +7,7 @@ export default class ListPage extends React.Component {
   
   state = {
     recommendations: [],
-    sort: ['Area', 'Zone', 'Bank', 'Stand'],
+    sort: names.sortTogether,
     sortDirection: [-1, -1, -1, -1],
     numberRows: 20,
     page: 0,
@@ -86,18 +86,61 @@ export default class ListPage extends React.Component {
   sort = (name) => {
     console.log('attempting to sort by' + name);
     const sortIndex = this.state.sort.indexOf(name);
+    const sortTogetherIndex = names.sortTogether.indexOf(name);
+
     if (sortIndex === -1) {
       const newSort = [name, ...this.state.sort];
       const newDirections = [1, ...this.state.sortDirection];
 
       const sorted = this.groupBy(this.sorter(this.state.recommendations, newSort, newDirections));
-        const selection = sorted.slice(this.state.page * this.state.numberRows, (this.state.page + 1) * (this.state.numberRows));
+        const selection = sorted.slice(0, this.state.numberRows);
 
         this.setState({
           sort: newSort,
           sortDirection: newDirections,
-          visible: selection
+          visible: selection,
+          page: 0
         });
+    }
+
+    else if (sortTogetherIndex === -1) {
+      const currentDirection = this.state.sortDirection[sortIndex];
+      const newSort = [name, ...this.state.sort.filter((ele) => ele !== name)];
+      const newDirections = [-currentDirection, ...this.state.sortDirection.filter((ele, i) => i !== sortIndex)];
+
+      const sorted = this.groupBy(this.sorter(this.state.recommendations, newSort, newDirections));
+      const selection = sorted.slice(0, this.state.numberRows);
+
+      this.setState({
+          sort: newSort,
+          sortDirection: newDirections,
+          visible: selection,
+          page: 0
+        });
+    }
+
+    else {
+      const newDirection = [...this.state.sortDirection];
+      newDirection[sortIndex] = -newDirection[sortIndex];
+      const combinations = newDirection.map((ele, i) => {
+        return [this.state.sort[i], ele]
+      })
+      const startIndex = this.state.sort.indexOf(names.sortTogether[0]);
+
+      const sortedCombinations = combinations.slice(startIndex, startIndex + names.sortTogether.length).concat(combinations.slice(0, startIndex)).concat(combinations.slice(startIndex + names.sortTogether.length, combinations.length));
+
+      const newSort = sortedCombinations.map(ele => ele[0]);
+      const newDirections = sortedCombinations.map (ele => ele[1]);
+
+      const sorted = this.groupBy(this.sorter(this.state.recommendations, newSort, newDirections));
+      const selection = sorted.slice(0, this.state.numberRows);
+
+      this.setState({
+        sort: newSort,
+        sortDirection: newDirections,
+        visible: selection,
+        page: 0
+      });
     }
   }
 
