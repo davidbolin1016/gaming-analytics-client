@@ -8,7 +8,7 @@ export default class Recommendation extends React.Component {
     const tableItems = ['View Details', ...columns.map(column => this.props.rec[column])];
     
     return <tr>
-      {tableItems.map(item => <td>{item}</td>)}
+      {tableItems.map((item, i) => <td key={i}>{item}</td>)}
     </tr>
   }
 }

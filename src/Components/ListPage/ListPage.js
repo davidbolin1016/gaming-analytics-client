@@ -1,34 +1,32 @@
 import React from 'react';
 import ApiService from '../../Services/ApiService';
 import Recommendation from '../Recommendation/Recommendation';
-
+import names from './columns';
 
 export default class ListPage extends React.Component {
   
   state = {
     recommendations: [],
-    sort: {
-      Action: 0,
-      Status: 0,
-      Area: -1,
-      Zone: -1,
-      Bank: -1,
-      Stand: -1,
-      NetWin: 0,
-      'Old Denom': 0,
-      'New Denom': 0,
-      'Old Payback %': 0,
-      'New Payback %': 0,
-      Asset: 0,
-      Date: 0
-    },
+    sort: ['Area', 'Zone', 'Bank', 'Stand'],
+    sortDirection: [-1, -1, -1, -1],
     numberRows: 20,
     page: 0,
     visible: []
   }
   
-  sorter = (arr) => {
-    return arr; // will implement sorting here
+  sorter = (arr, fields, directions) => {
+    return arr.sort((a, b) => {
+      for (let i = 0; i < fields.length; i++) {
+        if (a[fields[i]] < b[fields[i]]) {
+          return directions[i];
+        }
+
+        if (a[fields[i]] > b[fields[i]]) {
+          return -directions[i];
+        }
+      }
+      return 0;
+    })
   }
 
   groupBy = (arr) => {
@@ -37,7 +35,7 @@ export default class ListPage extends React.Component {
 
   changeFields(event) {
     const newNumber = event.target.value;
-    const sorted = this.groupBy(this.sorter(this.state.recommendations));
+    const sorted = this.groupBy(this.sorter(this.state.recommendations, this.state.sort, this.state.sortDirection));
     console.log(sorted.length);
     console.log(newNumber);
     console.log(this.state.page);
@@ -52,7 +50,7 @@ export default class ListPage extends React.Component {
   componentDidMount() {
     ApiService.getRecommendations()
       .then(res => {
-        const sorted = this.groupBy(this.sorter(res));
+        const sorted = this.groupBy(this.sorter(res, this.state.sort, this.state.sortDirection));
         const selection = sorted.slice(this.state.page * this.state.numberRows, (this.state.page + 1) * (this.state.numberRows));
 
         this.setState({
@@ -63,35 +61,77 @@ export default class ListPage extends React.Component {
       });
   }
 
+  next = () => {
+    const sorted = this.groupBy(this.sorter(this.state.recommendations, this.state.sort, this.state.sortDirection));
+    const newView = sorted.slice((this.state.page + 1) * this.state.numberRows, (this.state.page + 2) * this.state.numberRows);
+
+    this.setState({
+      page: this.state.page + 1,
+      visible: newView
+    }
+    )
+  }
+
+  previous = () => {
+    const sorted = this.groupBy(this.sorter(this.state.recommendations, this.state.sort, this.state.sortDirection));
+    const newView = sorted.slice((this.state.page - 1) * this.state.numberRows, (this.state.page) * this.state.numberRows);
+
+    this.setState({
+      page: this.state.page - 1,
+      visible: newView
+    }
+    )
+  }
+
+  sort = (name) => {
+    console.log('attempting to sort by' + name);
+    const sortIndex = this.state.sort.indexOf(name);
+    if (sortIndex === -1) {
+      const newSort = [name, ...this.state.sort];
+      const newDirections = [1, ...this.state.sortDirection];
+
+      const sorted = this.groupBy(this.sorter(this.state.recommendations, newSort, newDirections));
+        const selection = sorted.slice(this.state.page * this.state.numberRows, (this.state.page + 1) * (this.state.numberRows));
+
+        this.setState({
+          sort: newSort,
+          sortDirection: newDirections,
+          visible: selection
+        });
+    }
+  }
+
   render() {
     return <>
     <table>
       <tbody>
         <tr>
           <th></th>
-          <th>Action</th>
-          <th>Status</th>
-          <th>Area</th>
-          <th>Zone</th>
-          <th>Bank</th>
-          <th>Stand</th>
-          <th>Net Win</th>
-          <th>Old Denom</th>
-          <th>New Denom</th>
-          <th>Old Payback %</th>
-          <th>New Payback %</th>
-          <th>Asset</th>
-          <th>Generated On</th>
+          {names.visibleNames.map ((name, i) => {
+            const currentColumn = names.columns[i];
+            const sortIndex = this.state.sort.indexOf(currentColumn);
+            let arrow = '';
+
+            if (sortIndex !== -1) {
+              if (this.state.sortDirection[sortIndex] === -1) {
+                arrow = '▲';
+              } else {
+                arrow = '▼';
+              }
+            }
+
+            return <th key={i} onClick={event => this.sort(names.columns[i])}>{name}{arrow}</th>
+          })}
         </tr>      
-        {this.state.visible.map((recommendation, i) => <Recommendation rec={recommendation}></Recommendation>)}
+        {this.state.visible.map((recommendation, i) => <Recommendation key={i} rec={recommendation}></Recommendation>)}
         </tbody>
     </table>
     <div>
-      <button>Previous</button>
+      <button onClick={this.previous}>Previous</button>
       Page {this.state.page + 1} of {Math.ceil(this.state.recommendations.length / this.state.numberRows)}
       {'  '}
       <input type="number" value={this.state.numberRows} onChange={event => this.changeFields(event)}></input>rows
-      <button>Next</button>
+      <button onClick={this.next}>Next</button>
     </div>
     </>;
   }
