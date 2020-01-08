@@ -95,25 +95,30 @@ export default class ListPage extends React.Component {
 
   clickToGroup = (event) => {
     const colIndex = event.target.cellIndex - 1;
-    if (names.groupCandidates.indexOf(names.columns[colIndex]) !== -1) {
-      let group = names.columns[colIndex];
-      console.log(group);
-      console.log(names.groupCandidates);
-      console.log(names.groupCandidates.indexOf(names.columns[colIndex]));
+    let group, update;
+    
+    if (colIndex === -1) {
+      group = null
+      update = true;
+    } else {
+      group = names.columns[colIndex];
+    }
 
-      if (this.state.group === group) {
-        group = null;
-      }
+    if (this.state.group === group) {
+      group = null;
+      update = true;
+    }
 
+    if (names.groupCandidates.indexOf(names.columns[colIndex]) !== -1 || update) {
       const sorted = this.sorter(this.groupBy(this.state.recommendations, group), this.state.sort, this.state.sortDirection);
-        const selection = sorted.slice(0, this.state.numberRows);
+      const selection = sorted.slice(0, this.state.numberRows);
 
-        this.setState({
-          visible: selection,
-          page: 0,
-          group: group
-        }
-        );
+      this.setState({
+        visible: selection,
+        page: 0,
+        group: group
+      }
+      );
     }
 
   }
