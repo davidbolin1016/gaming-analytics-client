@@ -5,4 +5,6 @@ const visibleNames = ['Action', 'Status', 'Area', 'Zone', 'Bank', 'Stand', 'Net 
 
 const sortTogether = ['Area', 'Zone', 'Bank', 'Stand'];
 
-export default {columns, visibleNames, sortTogether};
+const groupCandidates = ['Bank', 'Area', 'Zone', 'Old Denom'];
+
+export default {columns, visibleNames, sortTogether, groupCandidates};

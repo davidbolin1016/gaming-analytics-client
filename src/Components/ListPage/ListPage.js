@@ -7,7 +7,7 @@ export default class ListPage extends React.Component {
   
   state = {
     recommendations: [],
-    group: 'Bank',
+    group: null,
     sort: names.sortTogether,
     sortDirection: [-1, -1, -1, -1],
     numberRows: 20,
@@ -91,6 +91,31 @@ export default class ListPage extends React.Component {
     }
     console.log(newArr);
     return newArr;
+  }
+
+  clickToGroup = (event) => {
+    const colIndex = event.target.cellIndex - 1;
+    if (names.groupCandidates.indexOf(names.columns[colIndex]) !== -1) {
+      let group = names.columns[colIndex];
+      console.log(group);
+      console.log(names.groupCandidates);
+      console.log(names.groupCandidates.indexOf(names.columns[colIndex]));
+
+      if (this.state.group === group) {
+        group = null;
+      }
+
+      const sorted = this.sorter(this.groupBy(this.state.recommendations, group), this.state.sort, this.state.sortDirection);
+        const selection = sorted.slice(0, this.state.numberRows);
+
+        this.setState({
+          visible: selection,
+          page: 0,
+          group: group
+        }
+        );
+    }
+
   }
 
   changeFields(event) {
@@ -226,7 +251,7 @@ export default class ListPage extends React.Component {
             return <th key={i} onClick={event => this.sort(names.columns[i])}>{name}{arrow}</th>
           })}
         </tr>      
-        {this.state.visible.map((recommendation, i) => <Recommendation key={i} rec={recommendation}></Recommendation>)}
+        {this.state.visible.map((recommendation, i) => <Recommendation key={i} rec={recommendation} clickToGroup={(ev) => this.clickToGroup(ev)}></Recommendation>)}
         </tbody>
     </table>
     <div>
