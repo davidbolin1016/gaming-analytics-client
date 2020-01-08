@@ -1,6 +1,5 @@
 import React from 'react';
 import ListPage from './Components/ListPage/ListPage';
-import Navigation from './Components/Navigation/Navigation'
 import './App.css';
 
 function App() {
@@ -8,7 +7,6 @@ function App() {
     <div className="App">
       <main>
         <ListPage></ListPage>
-        <Navigation></Navigation>
       </main>
     </div>
   );

@@ -1,0 +1,14 @@
+.title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-left: 50px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.green {
+  background-color: lightgreen;
+  min-height: 1.25em;
+  line-height: 1.25;
+  width: 100%;
+}

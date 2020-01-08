@@ -1,5 +1,5 @@
 import React from 'react';
-
+import TableCell from '../TableCell/TableCell';
 
 export default class Recommendation extends React.Component {
   
@@ -9,7 +9,7 @@ export default class Recommendation extends React.Component {
     const tableItems = ['View Details', ...columns.map(column => this.props.rec[column])];
     
     return <tr>
-      {tableItems.map((item, i) => <td key={i} onClick={this.props.clickToGroup}>{item}</td>)}
+      {tableItems.map((item, i) => <TableCell key={i} clickToGroup={this.props.clickToGroup} item={item} column={i}></TableCell>)}
     </tr>
   }
 }

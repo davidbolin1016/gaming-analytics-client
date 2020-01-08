@@ -1,0 +1,23 @@
+
+table {
+  border: 1px solid black;
+  table-layout: fixed;
+  width: 100%;
+}
+
+td {
+  border: 1px solid gray;
+}
+
+.table-container {
+  height: 35em;
+  overflow: auto;
+}
+
+td:hover {
+  background-color: lightgray;
+}
+
+th:hover {
+  color: blue;
+}

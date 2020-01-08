@@ -1,6 +1,9 @@
 import React from 'react';
 import ApiService from '../../Services/ApiService';
 import Recommendation from '../Recommendation/Recommendation';
+import PageHeader from '../PageHeader/PageHeader';
+import Navigation from '../Navigation/Navigation';
+import './ListPage.css';
 import names from './columns';
 
 export default class ListPage extends React.Component {
@@ -12,7 +15,8 @@ export default class ListPage extends React.Component {
     sortDirection: [-1, -1, -1, -1],
     numberRows: 20,
     page: 0,
-    visible: []
+    visible: [],
+    visibleRows: 0
   }
   
   sorter = (arr, fields, directions) => {
@@ -116,21 +120,19 @@ export default class ListPage extends React.Component {
       this.setState({
         visible: selection,
         page: 0,
-        group: group
+        group: group,
+        visibleRows: sorted.length
       }
       );
     }
 
   }
 
-  changeFields(event) {
+  changeFields = (event) => {
     const newNumber = event.target.value;
     const sorted = this.sorter(this.groupBy(this.state.recommendations, this.state.group), this.state.sort, this.state.sortDirection);
-    console.log(sorted.length);
-    console.log(newNumber);
-    console.log(this.state.page);
     const newView = sorted.slice(this.state.page * newNumber, (this.state.page + 1) * newNumber);
-    console.log(newView);
+    
     this.setState({
       numberRows: newNumber,
       visible: newView
@@ -145,7 +147,8 @@ export default class ListPage extends React.Component {
 
         this.setState({
           recommendations: res,
-          visible: selection
+          visible: selection,
+          visibleRows: res.length
         }
         );
       });
@@ -157,7 +160,8 @@ export default class ListPage extends React.Component {
 
     this.setState({
       page: this.state.page + 1,
-      visible: newView
+      visible: newView,
+      visibleRows: sorted.length
     }
     )
   }
@@ -168,7 +172,8 @@ export default class ListPage extends React.Component {
 
     this.setState({
       page: this.state.page - 1,
-      visible: newView
+      visible: newView,
+      visibleRows: sorted.length
     }
     )
   }
@@ -189,7 +194,8 @@ export default class ListPage extends React.Component {
           sort: newSort,
           sortDirection: newDirections,
           visible: selection,
-          page: 0
+          page: 0,
+          visibleRows: sorted.length
         });
     }
 
@@ -205,7 +211,8 @@ export default class ListPage extends React.Component {
           sort: newSort,
           sortDirection: newDirections,
           visible: selection,
-          page: 0
+          page: 0,
+          visibleRows: sorted.length
         });
     }
 
@@ -229,17 +236,20 @@ export default class ListPage extends React.Component {
         sort: newSort,
         sortDirection: newDirections,
         visible: selection,
-        page: 0
+        page: 0,
+        visibleRows: sorted.length
       });
     }
   }
 
   render() {
     return <>
-    <table>
-      <tbody>
-        <tr>
-          <th></th>
+    <PageHeader></PageHeader>
+    <div className="table-container">
+      <table>
+        <tbody>
+          <tr>
+           <th></th>
           {names.visibleNames.map ((name, i) => {
             const currentColumn = names.columns[i];
             const sortIndex = this.state.sort.indexOf(currentColumn);
@@ -258,15 +268,9 @@ export default class ListPage extends React.Component {
         </tr>      
         {this.state.visible.map((recommendation, i) => <Recommendation key={i} rec={recommendation} clickToGroup={(ev) => this.clickToGroup(ev)}></Recommendation>)}
         </tbody>
-    </table>
-    <div>
-      {this.state.group !== null && 'Grouping By ' + names.visibleNames[names.columns.indexOf(this.state.group)]}
-      <button onClick={this.previous}>Previous</button>
-      Page {this.state.page + 1} of {Math.ceil(this.state.recommendations.length / this.state.numberRows)}
-      {'  '}
-      <input type="number" value={this.state.numberRows} onChange={event => this.changeFields(event)}></input>rows
-      <button onClick={this.next}>Next</button>
+      </table>
     </div>
+    <Navigation group={this.state.group} page={this.state.page} visibleRows={this.state.visibleRows} numberRows={this.state.numberRows} next={this.next} changeFields={this.changeFields} previous={this.previous}></Navigation>
     </>;
   }
 }

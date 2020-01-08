@@ -1,0 +1,31 @@
+.navigation {
+  background-color: #CCFFFF;
+  text-align: right;
+}
+
+button {
+  background-color: white;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  margin: 15px;
+}
+
+button:enabled {
+  color: rgb(49, 111, 192);
+}
+
+button:disabled {
+  background-color: lightgrey;
+}
+
+button:hover:enabled {
+  background-color: lightblue;
+}
+
+input {
+  border-radius: 4px;
+  margin-left: 20px;
+  margin-right: 5px;
+  width: 3em;
+}
